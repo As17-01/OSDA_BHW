@@ -16,6 +16,7 @@ class DatasetEnum(Enum):
     fruits = auto()
     weather = auto()
     titanic = auto()
+    breast = auto()
 
     @classmethod
     def _missing_(cls, value):
@@ -109,6 +110,10 @@ class DatasetLoader:
         exclude = ["Date"]
         self._convert_to_categorical(weather, exclude=exclude)
 
+        np.random.seed(100)
+        
+        weather = weather.iloc[np.random.choice(len(weather), 10000, replace=False)]
+
         return weather
     
     def _load_titanic(self) -> pd.DataFrame:
@@ -120,6 +125,14 @@ class DatasetLoader:
         self._convert_to_categorical(titanic, exclude=exclude)
 
         return titanic
+    
+    def _load_breast(self) -> pd.DataFrame:
+        breast = pd.read_csv(self.path / "breast/breast-cancer.csv")
+
+        breast["diagnosis"] = breast["diagnosis"].map({"M": 1, "B": 0})
+        breast.rename(columns={"diagnosis": "target"}, inplace=True)
+
+        return breast
 
     def load_dataset(self, dataset: DatasetEnum) -> pd.DataFrame:
         if dataset == DatasetEnum.mushrooms:
@@ -134,6 +147,8 @@ class DatasetLoader:
             df = self._load_weather()
         elif dataset == DatasetEnum.titanic:
             df = self._load_titanic()
+        elif dataset == DatasetEnum.breast:
+            df = self._load_breast()
         else:
             raise ValueError("Not valid dataset!")
 
