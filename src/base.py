@@ -1,8 +1,12 @@
 from enum import Enum
 
 from catboost import CatBoostClassifier
-from sklearn.base import BaseEstimator
 from xgboost import XGBClassifier
+from sklearn.dummy import DummyClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 
 
 class BaseModelType(Enum):
@@ -10,7 +14,11 @@ class BaseModelType(Enum):
 
     cat = CatBoostClassifier
     xgb = XGBClassifier
-    sklearn = BaseEstimator
+    dummy = DummyClassifier
+    forest = RandomForestClassifier
+    nb = GaussianNB
+    knn = KNeighborsClassifier
+    regression = LogisticRegression
 
     @classmethod
     def _missing_(cls, value):
