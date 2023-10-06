@@ -8,12 +8,6 @@ import pandas as pd
 
 from src.base import BaseModelType
 from catboost import CatBoostClassifier
-from xgboost import XGBClassifier
-from sklearn.dummy import DummyClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.linear_model import LogisticRegression
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
@@ -116,6 +110,9 @@ class ModelPipeline:
             fold = self.normalize_numeric_values(fold, inference=False)
             encoded_fold, encoded_features = self.one_hot_encode(fold, cat_features)
             self.base_model.fit(encoded_fold[encoded_features], fold["target"])
+
+        elif isinstance(self.base_model, BaseModelType.tree.value):
+            self.base_model.fit(fold[self.features], fold["target"])
 
         else:
             raise ValueError("Not valid model!")

@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 
 
 class BaseModelType(Enum):
@@ -19,6 +20,7 @@ class BaseModelType(Enum):
     nb = GaussianNB
     knn = KNeighborsClassifier
     regression = LogisticRegression
+    tree = DecisionTreeClassifier
 
     @classmethod
     def _missing_(cls, value):
