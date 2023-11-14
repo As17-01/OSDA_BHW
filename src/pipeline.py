@@ -1,158 +1,167 @@
+import pathlib
+import pickle
+import tempfile
+import zipfile
 from typing import Any
-from typing import Callable
-from typing import Tuple
 from typing import Dict
 from typing import List
 
+import numpy as np
 import pandas as pd
-
-from src.base import BaseModelType
 from catboost import CatBoostClassifier
-
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 
+from src.base import BaseModelType
+from src.utils import find_cat_columns
+from src.utils import find_num_columns
+from src.utils import label_encode
+from src.utils import normalize_numeric_values
+from src.utils import one_hot_encode
 
 
-class ModelPipeline:
-    def __init__(self, base_model: Any, features: List[str], metrics: List[Tuple[str, Callable]]):
+class Pipeline:
+    def __init__(self, base_model: Any):
         self.base_model = base_model
-        self.features = features
-        self.metrics = metrics
+        self.encoders = []
+        self.scalers = []
 
-        self._label_encoders = []
-        self._scalers = []
-
-    def one_hot_encode(self, fold: pd.DataFrame, cat_features: List[str]) -> Tuple[pd.DataFrame, List[str]]:
-        fold = fold.copy()
-        reg_features = [feature for feature in self.features if feature not in cat_features]
-
-        for cat_column in cat_features:
-            dummies = pd.get_dummies(fold[cat_column], drop_first=True)
-            new_col_names = [f"{cat_column}_{dummy_name}" for dummy_name in dummies.columns]
-            dummies.columns = new_col_names
-
-            fold = pd.concat([fold, dummies], axis=1)
-            fold.drop(columns=cat_column, inplace=True)
-
-            reg_features.extend(new_col_names)
-
-        return fold, reg_features
-    
-    def label_encode(self, fold: pd.DataFrame, cat_features: List[str], inference: bool) -> pd.DataFrame:
-        fold = fold.copy()
-
-        if not inference:
-            self._label_encoders = []
-            for cat_column in cat_features:
-                l_encoder = LabelEncoder()
-                fold[cat_column] = l_encoder.fit_transform(fold[cat_column])
-                fold[cat_column] = fold[cat_column].astype("category")
-                self._label_encoders.append(l_encoder)
-        else:
-            for i, cat_column in enumerate(cat_features):
-                l_encoder = self._label_encoders[i]
-                fold[cat_column] = l_encoder.transform(fold[cat_column])
-                fold[cat_column] = fold[cat_column].astype("category")
-
-        return fold
-    
-    def normalize_numeric_values(self, fold: pd.DataFrame, inference: bool) -> pd.DataFrame:
-        fold = fold.copy()
-        
-        numeric_features = [col_name for col_name in fold.columns if fold[col_name].dtypes in [int, float] and col_name != "target"]
-        if not inference:
-            self._scalers = []
-            for num_column in numeric_features:
-                s_scaler = StandardScaler()
-                fold[num_column] = s_scaler.fit_transform(fold[[num_column]])
-                self._scalers.append(s_scaler)
-        else:
-            for i, num_column in enumerate(numeric_features):
-                s_scaler = self._scalers[i]
-                fold[num_column] = s_scaler.transform(fold[[num_column]])
-
-        return fold
-
-    def fit(self, fold: pd.DataFrame) -> None:
-        fold = fold.copy()
-
-        cat_features = [col_name for col_name in self.features if fold[col_name].dtypes == "category"]
-        fold = self.label_encode(fold, cat_features, inference=False)
-
+    def fit_model(self, data: pd.DataFrame, target: pd.Series, cat_columns: List[str], num_columns: List[str]):
         if isinstance(self.base_model, BaseModelType.cat.value):
             params = {**self.base_model.get_params()}
-            params["cat_features"] = cat_features
+            params["cat_features"] = cat_columns
 
             self.base_model = CatBoostClassifier(**params)
-            self.base_model.fit(fold[self.features], fold["target"])
+            self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.xgb.value):
-            self.base_model.fit(fold[self.features], fold["target"])
+            self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.dummy.value):
-            self.base_model.fit(fold[self.features], fold["target"])
+            self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.forest.value):
-            self.base_model.fit(fold[self.features], fold["target"])
+            self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.nb.value):
-            fold = self.normalize_numeric_values(fold, inference=False)
-            encoded_fold, encoded_features = self.one_hot_encode(fold, cat_features)
-            self.base_model.fit(encoded_fold[encoded_features], fold["target"])
+            for col_name in cat_columns:
+                data = one_hot_encode(data, col_name)
+            self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.knn.value):
-            fold = self.normalize_numeric_values(fold, inference=False)
-            encoded_fold, encoded_features = self.one_hot_encode(fold, cat_features)
-            self.base_model.fit(encoded_fold[encoded_features], fold["target"])
-            
+            for col_name in cat_columns:
+                data = one_hot_encode(data, col_name)
+            self.base_model.fit(data, target)
+
         elif isinstance(self.base_model, BaseModelType.regression.value):
-            fold = self.normalize_numeric_values(fold, inference=False)
-            encoded_fold, encoded_features = self.one_hot_encode(fold, cat_features)
-            self.base_model.fit(encoded_fold[encoded_features], fold["target"])
+            for col_name in cat_columns:
+                data = one_hot_encode(data, col_name)
+            self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.tree.value):
-            self.base_model.fit(fold[self.features], fold["target"])
+            self.base_model.fit(data, target)
 
         else:
             raise ValueError("Not valid model!")
 
-    def predict(self, fold: pd.DataFrame) -> pd.Series:
-        fold = fold.copy()
+    def predict_proba_model(
+        self, data: pd.DataFrame, cat_columns: List[str], num_columns: List[str]
+    ) -> pd.Series:
+        if isinstance(self.base_model, BaseModelType.cat.value):
+            predictions = self.base_model.predict_proba(data)
 
-        cat_features = [col_name for col_name in self.features if fold[col_name].dtypes == "category"]
-        fold = self.label_encode(fold, cat_features, inference=True)
+        elif isinstance(self.base_model, BaseModelType.xgb.value):
+            predictions = self.base_model.predict_proba(data)
 
-        if isinstance(self.base_model, BaseModelType.nb.value):
-            fold = self.normalize_numeric_values(fold, inference=True)
-            encoded_fold, encoded_features = self.one_hot_encode(fold, cat_features)
-            result = pd.Series(self.base_model.predict_proba(encoded_fold[encoded_features])[:, 1])
+        elif isinstance(self.base_model, BaseModelType.dummy.value):
+            predictions = self.base_model.predict_proba(data)
+
+        elif isinstance(self.base_model, BaseModelType.forest.value):
+            predictions = self.base_model.predict_proba(data)
+
+        elif isinstance(self.base_model, BaseModelType.nb.value):
+            for col_name in cat_columns:
+                data = one_hot_encode(data, col_name)
+            predictions = self.base_model.predict_proba(data)
 
         elif isinstance(self.base_model, BaseModelType.knn.value):
-            fold = self.normalize_numeric_values(fold, inference=True)
-            encoded_fold, encoded_features = self.one_hot_encode(fold, cat_features)
-            result = pd.Series(self.base_model.predict_proba(encoded_fold[encoded_features])[:, 1])
+            for col_name in cat_columns:
+                data = one_hot_encode(data, col_name)
+            predictions = self.base_model.predict_proba(data)
 
         elif isinstance(self.base_model, BaseModelType.regression.value):
-            fold = self.normalize_numeric_values(fold, inference=True)
-            encoded_fold, encoded_features = self.one_hot_encode(fold, cat_features)
-            result = pd.Series(self.base_model.predict_proba(encoded_fold[encoded_features])[:, 1])
+            for col_name in cat_columns:
+                data = one_hot_encode(data, col_name)
+            predictions = self.base_model.predict_proba(data)
+
+        elif isinstance(self.base_model, BaseModelType.tree.value):
+            predictions = self.base_model.predict_proba(data)
 
         else:
-            result = pd.Series(self.base_model.predict_proba(fold[self.features])[:, 1])
+            raise ValueError("Not valid model!")
 
-        return result
+        return predictions
 
-    def calculate_metrics(self, fold: pd.DataFrame, predictions: pd.Series) -> Dict[str, Any]:
-        predictions_binary = (predictions > 0.5).astype("int32")
-        
-        result: Dict[str, Any] = {}
-        for metric_type, metric in self.metrics:
-            if metric_type == "binary":
-                result[repr(metric)] = metric(y_true=fold["target"], y_pred=predictions_binary)
-            elif metric_type == "score":
-                result[repr(metric)] = metric(y_true=fold["target"], y_score=predictions)
-            else:
-                raise ValueError("Not valid metric type")
+    def fit(self, data: pd.DataFrame, target: pd.Series):
+        cat_columns = find_cat_columns(data)
+        num_columns = find_num_columns(data)
 
-        return result
+        for col_name in cat_columns:
+            le = LabelEncoder()
+            data = label_encode(data=data, cat_feature=col_name, encoder=le, is_inference=False)
+            self.encoders.append(le)
+
+        for col_name in num_columns:
+            ss = StandardScaler()
+            data = normalize_numeric_values(data=data, num_feature=col_name, scaler=ss, is_inference=False)
+            self.scalers.append(ss)
+
+        self.fit_model(data, np.ravel(target), cat_columns, num_columns)
+
+    def predict_proba(self, data: pd.DataFrame) -> pd.Series:
+        cat_columns = find_cat_columns(data)
+        num_columns = find_num_columns(data)
+
+        for i, col_name in enumerate(cat_columns):
+            data = label_encode(data=data, cat_feature=col_name, encoder=self.encoders[i], is_inference=True)
+
+        for i, col_name in enumerate(num_columns):
+            data = normalize_numeric_values(data=data, num_feature=col_name, scaler=self.scalers[i], is_inference=True)
+
+        predictions = self.predict_proba_model(data, cat_columns, num_columns)
+        return predictions
+
+    def save(self, path: pathlib.Path):
+        with tempfile.TemporaryDirectory() as _output_path:
+            output_path = pathlib.Path(_output_path)
+
+            with zipfile.ZipFile(path, mode="w", compression=zipfile.ZIP_DEFLATED) as archieve:
+                par: Dict[str, Any] = {}
+
+                pickle.dump(par, open(output_path / f"par.pkl", "wb"))
+                pickle.dump(self.base_model, open(output_path / f"base_model.pkl", "wb"))
+                pickle.dump(self.encoders, open(output_path / f"encoders.pkl", "wb"))
+                pickle.dump(self.scalers, open(output_path / f"scalers.pkl", "wb"))
+
+                archieve.write(output_path / f"par.pkl", pathlib.Path(f"par.pkl"))
+                archieve.write(output_path / f"base_model.pkl", pathlib.Path(f"base_model.pkl"))
+                archieve.write(output_path / f"encoders.pkl", pathlib.Path(f"encoders.pkl"))
+                archieve.write(output_path / f"scalers.pkl", pathlib.Path(f"scalers.pkl"))
+
+    @classmethod
+    def load(cls, path: pathlib.Path) -> "Pipeline":
+        with tempfile.TemporaryDirectory() as _output_path:
+            output_path = pathlib.Path(_output_path)
+
+            with zipfile.ZipFile(path, mode="r") as archieve:
+                archieve.extractall(output_path)
+
+            par = pickle.load(open(output_path / f"par.pkl", "rb"))
+            base_model = pickle.load(open(output_path / f"base_model.pkl", "rb"))
+            encoders = pickle.load(open(output_path / f"encoders.pkl", "rb"))
+            scalers = pickle.load(open(output_path / f"scalers.pkl", "rb"))
+
+        loaded_instance = cls(base_model=base_model, **par)
+        loaded_instance.encoders = encoders
+        loaded_instance.scalers = scalers
+        return loaded_instance

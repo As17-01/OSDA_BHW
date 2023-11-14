@@ -1,13 +1,13 @@
 from enum import Enum
 
 from catboost import CatBoostClassifier
-from xgboost import XGBClassifier
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
+from xgboost import XGBClassifier
 
 
 class BaseModelType(Enum):
