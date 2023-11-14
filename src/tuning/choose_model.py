@@ -51,7 +51,7 @@ def _choose_xgboost(trial: optuna.Trial) -> Dict[str, Any]:
 
 def _choose_knn(trial: optuna.Trial) -> Dict[str, Any]:
     model_config = {
-        "n_neighbors": trial.suggest_int("n_neighbors", 2, 10, log=True),
+        "n_neighbors": trial.suggest_int("n_neighbors", 2, 20, log=True),
     }
     model_config["algorithm"] = trial.suggest_categorical('algorithm', ['auto','ball_tree','kd_tree','brute'])
 
