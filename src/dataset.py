@@ -94,10 +94,6 @@ class DatasetLoader:
         heart.rename(columns={"HeartDisease": "target"}, inplace=True)
 
         self._convert_to_categorical(heart)
-
-        np.random.seed(100)
-
-        heart = heart.iloc[np.random.choice(len(heart), 2000, replace=False)]
         return heart
 
     def _load_fruits(self) -> pd.DataFrame:

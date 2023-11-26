@@ -65,7 +65,7 @@ def _choose_forest(trial: optuna.Trial) -> Dict[str, Any]:
     model_config = {
         "n_estimators": trial.suggest_int("n_estimators", 50, 1000),
         "max_depth": trial.suggest_int("max_depth", 4, 50),
-        "min_samples_split": trial.suggest_int("min_samples_split", 1, 150),
+        "min_samples_split": trial.suggest_int("min_samples_split", 2, 150),
         "min_samples_leaf": trial.suggest_int("min_samples_leaf", 1, 60),
     }
 
