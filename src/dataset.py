@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 
-class DatasetEnum(Enum):
+class Dataset(Enum):
     """Enum for datasets."""
 
     mushrooms = auto()
@@ -83,6 +83,10 @@ class DatasetLoader:
         water["target"] = water["target"].astype("int32")
 
         self._convert_to_categorical(water)
+
+        np.random.seed(100)
+
+        water = water.iloc[np.random.choice(len(water), 2000, replace=False)]
         return water
 
     def _load_heart(self) -> pd.DataFrame:
@@ -90,14 +94,18 @@ class DatasetLoader:
         heart.rename(columns={"HeartDisease": "target"}, inplace=True)
 
         self._convert_to_categorical(heart)
+
+        np.random.seed(100)
+
+        heart = heart.iloc[np.random.choice(len(heart), 2000, replace=False)]
         return heart
-    
+
     def _load_fruits(self) -> pd.DataFrame:
         fruits = pd.read_excel(self.path / "date_fruit_datasets/Date_Fruit_Datasets.xlsx")
 
         self._convert_to_categorical(fruits)
         return fruits
-    
+
     def _load_weather(self) -> pd.DataFrame:
         weather = pd.read_csv(self.path / "weather/weatherAUS.csv")
 
@@ -106,26 +114,38 @@ class DatasetLoader:
 
         weather = weather[~weather["target"].isna()]
         weather["target"] = weather["target"].astype("int32")
-        
+
         exclude = ["Date"]
         self._convert_to_categorical(weather, exclude=exclude)
 
         np.random.seed(100)
-        
-        weather = weather.iloc[np.random.choice(len(weather), 10000, replace=False)]
+
+        weather = weather.iloc[np.random.choice(len(weather), 2000, replace=False)]
+
+        weather.drop(columns=["Date", "Location", "RainToday"], inplace=True)
+
+        for col_name in weather.drop(columns="target").columns:
+            if weather[col_name].dtypes == "float" and np.all(
+                weather[~weather[col_name].isna()][col_name] % 1.0 == 0.0
+            ):
+                weather[col_name] = weather[col_name].fillna(np.round(np.mean(weather[col_name]))).astype("int32")
+            elif weather[col_name].dtypes == "float":
+                weather[col_name] = weather[col_name].fillna(np.mean(weather[col_name])).astype("float64")
+            elif weather[col_name].dtypes == "category":
+                weather[col_name] = weather[col_name].astype("str").fillna("unk").astype("category")
 
         return weather
-    
+
     def _load_titanic(self) -> pd.DataFrame:
         titanic = pd.read_csv(self.path / "titanic/train.csv")
 
         titanic.rename(columns={"Survived": "target"}, inplace=True)
-        
+
         exclude = ["Name", "Ticket", "Cabin"]
         self._convert_to_categorical(titanic, exclude=exclude)
 
         return titanic
-    
+
     def _load_breast(self) -> pd.DataFrame:
         breast = pd.read_csv(self.path / "breast/breast-cancer.csv")
 
@@ -134,20 +154,20 @@ class DatasetLoader:
 
         return breast
 
-    def load_dataset(self, dataset: DatasetEnum) -> pd.DataFrame:
-        if dataset == DatasetEnum.mushrooms:
+    def load_dataset(self, dataset: Dataset) -> pd.DataFrame:
+        if dataset == Dataset.mushrooms:
             df = self._load_mushrooms()
-        elif dataset == DatasetEnum.water:
+        elif dataset == Dataset.water:
             df = self._load_water()
-        elif dataset == DatasetEnum.heart:
+        elif dataset == Dataset.heart:
             df = self._load_heart()
-        elif dataset == DatasetEnum.fruits:
+        elif dataset == Dataset.fruits:
             df = self._load_fruits()
-        elif dataset == DatasetEnum.weather:
+        elif dataset == Dataset.weather:
             df = self._load_weather()
-        elif dataset == DatasetEnum.titanic:
+        elif dataset == Dataset.titanic:
             df = self._load_titanic()
-        elif dataset == DatasetEnum.breast:
+        elif dataset == Dataset.breast:
             df = self._load_breast()
         else:
             raise ValueError("Not valid dataset!")

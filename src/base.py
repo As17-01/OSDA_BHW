@@ -9,6 +9,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
+from src.formal_concept import FormalConcept
+
 
 class BaseModelType(Enum):
     """Enum for models."""
@@ -21,6 +23,7 @@ class BaseModelType(Enum):
     knn = KNeighborsClassifier
     regression = LogisticRegression
     tree = DecisionTreeClassifier
+    formal_concept = FormalConcept
 
     @classmethod
     def _missing_(cls, value):

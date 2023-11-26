@@ -1,6 +1,7 @@
 from typing import Any
 from typing import List
 
+import numpy as np
 import pandas as pd
 
 
@@ -14,11 +15,28 @@ def find_num_columns(data: pd.DataFrame) -> List[str]:
     return num_columns
 
 
-def one_hot_encode(data: pd.DataFrame, cat_feature: str) -> pd.DataFrame:
+def binarize_column(data: pd.DataFrame, num_feature: str, thr: float, scaler: Any):
+    data = data.copy()
+
+    thr = np.round(thr, 3)
+
+    data[num_feature] = scaler.inverse_transform(data[[num_feature]])
+
+    data[num_feature] = data[num_feature] >= thr
+    data.rename(columns={num_feature: f"{num_feature}>={thr}"}, inplace=True)
+
+    return data
+
+
+def one_hot_encode(data: pd.DataFrame, cat_feature: str, return_bool: bool = False) -> pd.DataFrame:
     data = data.copy()
 
     dummies = pd.get_dummies(data[cat_feature], drop_first=True)
     dummies.columns = [f"{cat_feature}_{dummy_name}" for dummy_name in dummies.columns]
+
+    if return_bool:
+        for col in dummies:
+            dummies[col] = dummies[col].astype(bool)
 
     data = pd.concat([data, dummies], axis=1)
     data.drop(columns=cat_feature, inplace=True)

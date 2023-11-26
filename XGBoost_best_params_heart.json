@@ -1,0 +1,12 @@
+{
+  "enable_categorical": true,
+  "max_depth": 1,
+  "learning_rate": 0.6729164131247991,
+  "n_estimators": 50,
+  "min_child_weight": 6,
+  "gamma": 1.1565617352046847e-06,
+  "subsample": 0.30855492799032963,
+  "colsample_bytree": 0.0679528897731819,
+  "reg_alpha": 1.158510221968882e-06,
+  "reg_lambda": 4.428679941201e-05
+}

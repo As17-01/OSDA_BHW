@@ -13,6 +13,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 
 from src.base import BaseModelType
+from src.utils import binarize_column
 from src.utils import find_cat_columns
 from src.utils import find_num_columns
 from src.utils import label_encode
@@ -61,12 +62,24 @@ class Pipeline:
         elif isinstance(self.base_model, BaseModelType.tree.value):
             self.base_model.fit(data, target)
 
+        elif isinstance(self.base_model, BaseModelType.formal_concept.value):
+            for i, col_name in enumerate(num_columns):
+                data = binarize_column(
+                    data=data, num_feature=col_name, thr=self.base_model.thr_dict[col_name], scaler=self.scalers[i]
+                )
+            for col_name in cat_columns:
+                data = one_hot_encode(data, col_name, return_bool=True)
+
+            data.reset_index(inplace=True)
+            data["index"] = data["index"].astype("str")
+            data.set_index("index", inplace=True)
+
+            self.base_model.fit(data, target)
+
         else:
             raise ValueError("Not valid model!")
 
-    def predict_proba_model(
-        self, data: pd.DataFrame, cat_columns: List[str], num_columns: List[str]
-    ) -> pd.Series:
+    def predict_proba_model(self, data: pd.DataFrame, cat_columns: List[str], num_columns: List[str]) -> pd.Series:
         if isinstance(self.base_model, BaseModelType.cat.value):
             predictions = self.base_model.predict_proba(data)
 
@@ -95,6 +108,16 @@ class Pipeline:
             predictions = self.base_model.predict_proba(data)
 
         elif isinstance(self.base_model, BaseModelType.tree.value):
+            predictions = self.base_model.predict_proba(data)
+
+        elif isinstance(self.base_model, BaseModelType.formal_concept.value):
+            for i, col_name in enumerate(num_columns):
+                data = binarize_column(
+                    data=data, num_feature=col_name, thr=self.base_model.thr_dict[col_name], scaler=self.scalers[i]
+                )
+            for col_name in cat_columns:
+                data = one_hot_encode(data, col_name, return_bool=True)
+
             predictions = self.base_model.predict_proba(data)
 
         else:

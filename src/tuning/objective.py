@@ -1,6 +1,3 @@
-from typing import Any
-from typing import List
-
 import optuna
 import pandas as pd
 from loguru import logger
@@ -18,9 +15,8 @@ def objective(
     model_name: str,
 ) -> float:
     """Optuna objective."""
-
     # logger.info("Forming config for cross-validation")
-    model = choose_model(trial, model_name)
+    model = choose_model(trial, model_name, data)
     pipeline = Pipeline(base_model=model)
     logger.info(f"Selected config: {trial.params}")
 
