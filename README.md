@@ -7,4 +7,4 @@ Check the following notebooks for the results:
 
 To deal with numeric values I used binarization of features. Neural FCA does not show good results on the following datasets.
 
-Accuracy metric values are available either inside `*.ipynb` files, or as `*.csv` files in `/checkpoints`
+Accuracy metric values are available either inside `*.ipynb` files, or as `*.csv` files in `/metrics`
