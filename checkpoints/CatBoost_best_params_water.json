@@ -1,0 +1,9 @@
+{
+  "silent": true,
+  "iterations": 325,
+  "depth": 6,
+  "learning_rate": 0.06380106818575314,
+  "l2_leaf_reg": 0.650457938031573,
+  "colsample_bylevel": 0.28601153953475833,
+  "bootstrap_type": "MVS"
+}

@@ -79,7 +79,6 @@ class Pipeline:
         else:
             raise ValueError("Not valid model!")
 
-
     def predict_proba_model(self, data: pd.DataFrame, cat_columns: List[str], num_columns: List[str]) -> pd.Series:
         if isinstance(self.base_model, BaseModelType.cat.value):
             predictions = self.base_model.predict_proba(data)
@@ -152,6 +151,11 @@ class Pipeline:
             data = normalize_numeric_values(data=data, num_feature=col_name, scaler=self.scalers[i], is_inference=True)
 
         predictions = self.predict_proba_model(data, cat_columns, num_columns)
+        return predictions
+
+    def predict(self, data: pd.DataFrame) -> pd.Series:
+        probs = self.predict_proba(data)[:, 1]
+        predictions = np.where(probs > 0.5, 1, 0)
         return predictions
 
     def save(self, path: pathlib.Path):

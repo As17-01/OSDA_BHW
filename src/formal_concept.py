@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from fcapy.context import FormalContext
 from fcapy.lattice import ConceptLattice
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score
 
 import neural_fca_example.neural_lib as nl
 
@@ -24,9 +24,9 @@ class FormalConcept:
         for c in lattice:
             y_preds = np.zeros(k_train.n_objects)
             y_preds[list(c.extent_i)] = 1
-            c.measures = c.measures.set("f1_score", roc_auc_score(target, y_preds))
+            c.measures = c.measures.set("accuracy", accuracy_score(target, y_preds))
 
-        best_concepts = list(lattice.measures["f1_score"].argsort()[::-1][:self.n_concepts])
+        best_concepts = list(lattice.measures["accuracy"].argsort()[::-1][: self.n_concepts])
 
         self.cn = nl.ConceptNetwork.from_lattice(lattice, best_concepts, sorted(set(target)))
         self.cn.fit(data, pd.Series(target))

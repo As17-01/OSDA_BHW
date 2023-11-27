@@ -1,0 +1,10 @@
+{
+  "silent": true,
+  "iterations": 500,
+  "depth": 6,
+  "learning_rate": 0.0014001583358260003,
+  "l2_leaf_reg": 0.6615379362445619,
+  "colsample_bylevel": 0.9678606199141482,
+  "bootstrap_type": "Bernoulli",
+  "subsample": 0.9807806175540799
+}

@@ -1,7 +1,7 @@
 import optuna
 import pandas as pd
 from loguru import logger
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import KFold
 
 from src.pipeline import Pipeline
@@ -20,7 +20,7 @@ def objective(
     pipeline = Pipeline(base_model=model)
     logger.info(f"Selected config: {trial.params}")
 
-    n_splits = 2
+    n_splits = 3
     fold_generator = KFold(n_splits=n_splits, shuffle=True, random_state=101)
 
     folds = fold_generator.split(data, y=target)
@@ -30,9 +30,9 @@ def objective(
         test_data, test_target = data.iloc[test_fold_idx], target.iloc[test_fold_idx]
 
         pipeline.fit(train_data, train_target)
-        predictions = pipeline.predict_proba(test_data)[:, 1]
+        predictions = pipeline.predict(test_data)
 
-        logger.info(f"Fold {i}: {roc_auc_score(y_true=test_target, y_score=predictions)}")
-        avg_metric_value += roc_auc_score(y_true=test_target, y_score=predictions) / n_splits
+        logger.info(f"Fold {i}: {accuracy_score(y_true=test_target, y_pred=predictions)}")
+        avg_metric_value += accuracy_score(y_true=test_target, y_pred=predictions) / n_splits
 
     return avg_metric_value
