@@ -11,8 +11,9 @@ import neural_fca_example.neural_lib as nl
 
 
 class FormalConcept:
-    def __init__(self, thr_dict: Dict[str, Any]):
+    def __init__(self, thr_dict: Dict[str, Any], n_concepts: int):
         self.thr_dict = thr_dict
+        self.n_concepts = n_concepts
         self.cn = None
 
     def fit(self, data: pd.DataFrame, target: pd.Series):
@@ -25,10 +26,10 @@ class FormalConcept:
             y_preds[list(c.extent_i)] = 1
             c.measures = c.measures.set("f1_score", roc_auc_score(target, y_preds))
 
-        best_concepts = list(lattice.measures["f1_score"].argsort()[::-1][:7])
+        best_concepts = list(lattice.measures["f1_score"].argsort()[::-1][:self.n_concepts])
 
         self.cn = nl.ConceptNetwork.from_lattice(lattice, best_concepts, sorted(set(target)))
-        self.cn.fit(data, target)
+        self.cn.fit(data, pd.Series(target))
 
     def predict_proba(self, data: pd.DataFrame):
         predictions = self.cn.predict_proba(data).detach().numpy()

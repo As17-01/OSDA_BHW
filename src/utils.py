@@ -28,8 +28,10 @@ def binarize_column(data: pd.DataFrame, num_feature: str, thr: float, scaler: An
     return data
 
 
-def one_hot_encode(data: pd.DataFrame, cat_feature: str, return_bool: bool = False) -> pd.DataFrame:
+def one_hot_encode(data: pd.DataFrame, cat_feature: str, encoder: Any, return_bool: bool = False) -> pd.DataFrame:
     data = data.copy()
+
+    data[cat_feature] = encoder.inverse_transform(data[cat_feature])
 
     dummies = pd.get_dummies(data[cat_feature], drop_first=True)
     dummies.columns = [f"{cat_feature}_{dummy_name}" for dummy_name in dummies.columns]

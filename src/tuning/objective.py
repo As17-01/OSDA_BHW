@@ -20,7 +20,7 @@ def objective(
     pipeline = Pipeline(base_model=model)
     logger.info(f"Selected config: {trial.params}")
 
-    n_splits = 5
+    n_splits = 2
     fold_generator = KFold(n_splits=n_splits, shuffle=True, random_state=101)
 
     folds = fold_generator.split(data, y=target)
@@ -32,6 +32,7 @@ def objective(
         pipeline.fit(train_data, train_target)
         predictions = pipeline.predict_proba(test_data)[:, 1]
 
+        logger.info(f"Fold {i}: {roc_auc_score(y_true=test_target, y_score=predictions)}")
         avg_metric_value += roc_auc_score(y_true=test_target, y_score=predictions) / n_splits
 
     return avg_metric_value

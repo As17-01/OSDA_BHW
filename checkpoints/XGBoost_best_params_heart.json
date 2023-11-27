@@ -1,12 +1,12 @@
 {
   "enable_categorical": true,
-  "max_depth": 2,
-  "learning_rate": 0.12183086055331822,
-  "n_estimators": 225,
-  "min_child_weight": 2,
-  "gamma": 0.0005626854606435888,
-  "subsample": 0.26702834762346467,
-  "colsample_bytree": 0.07337305699166423,
-  "reg_alpha": 0.0015812045436224263,
-  "reg_lambda": 1.0300981295729473e-07
+  "max_depth": 1,
+  "learning_rate": 0.12866968855121952,
+  "n_estimators": 250,
+  "min_child_weight": 7,
+  "gamma": 0.035164083399431695,
+  "subsample": 0.5365836962015049,
+  "colsample_bytree": 0.10119925107148406,
+  "reg_alpha": 0.00751666275264175,
+  "reg_lambda": 1.5661821580544744e-06
 }

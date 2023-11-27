@@ -45,18 +45,18 @@ class Pipeline:
             self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.nb.value):
-            for col_name in cat_columns:
-                data = one_hot_encode(data, col_name)
+            for i, col_name in enumerate(cat_columns):
+                data = one_hot_encode(data, col_name, encoder=self.encoders[i])
             self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.knn.value):
-            for col_name in cat_columns:
-                data = one_hot_encode(data, col_name)
+            for i, col_name in enumerate(cat_columns):
+                data = one_hot_encode(data, col_name, encoder=self.encoders[i])
             self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.regression.value):
-            for col_name in cat_columns:
-                data = one_hot_encode(data, col_name)
+            for i, col_name in enumerate(cat_columns):
+                data = one_hot_encode(data, col_name, encoder=self.encoders[i])
             self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.tree.value):
@@ -67,8 +67,8 @@ class Pipeline:
                 data = binarize_column(
                     data=data, num_feature=col_name, thr=self.base_model.thr_dict[col_name], scaler=self.scalers[i]
                 )
-            for col_name in cat_columns:
-                data = one_hot_encode(data, col_name, return_bool=True)
+            for i, col_name in enumerate(cat_columns):
+                data = one_hot_encode(data, col_name, encoder=self.encoders[i], return_bool=True)
 
             data.reset_index(inplace=True)
             data["index"] = data["index"].astype("str")
@@ -78,6 +78,7 @@ class Pipeline:
 
         else:
             raise ValueError("Not valid model!")
+
 
     def predict_proba_model(self, data: pd.DataFrame, cat_columns: List[str], num_columns: List[str]) -> pd.Series:
         if isinstance(self.base_model, BaseModelType.cat.value):
@@ -93,18 +94,18 @@ class Pipeline:
             predictions = self.base_model.predict_proba(data)
 
         elif isinstance(self.base_model, BaseModelType.nb.value):
-            for col_name in cat_columns:
-                data = one_hot_encode(data, col_name)
+            for i, col_name in enumerate(cat_columns):
+                data = one_hot_encode(data, col_name, encoder=self.encoders[i])
             predictions = self.base_model.predict_proba(data)
 
         elif isinstance(self.base_model, BaseModelType.knn.value):
-            for col_name in cat_columns:
-                data = one_hot_encode(data, col_name)
+            for i, col_name in enumerate(cat_columns):
+                data = one_hot_encode(data, col_name, encoder=self.encoders[i])
             predictions = self.base_model.predict_proba(data)
 
         elif isinstance(self.base_model, BaseModelType.regression.value):
-            for col_name in cat_columns:
-                data = one_hot_encode(data, col_name)
+            for i, col_name in enumerate(cat_columns):
+                data = one_hot_encode(data, col_name, encoder=self.encoders[i])
             predictions = self.base_model.predict_proba(data)
 
         elif isinstance(self.base_model, BaseModelType.tree.value):
@@ -115,9 +116,8 @@ class Pipeline:
                 data = binarize_column(
                     data=data, num_feature=col_name, thr=self.base_model.thr_dict[col_name], scaler=self.scalers[i]
                 )
-            for col_name in cat_columns:
-                data = one_hot_encode(data, col_name, return_bool=True)
-
+            for i, col_name in enumerate(cat_columns):
+                data = one_hot_encode(data, col_name, encoder=self.encoders[i], return_bool=True)
             predictions = self.base_model.predict_proba(data)
 
         else:
