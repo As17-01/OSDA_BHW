@@ -1,4 +1,10 @@
 {
-  "Rainfall": 31.990864538955087,
-  "n_concepts": 1
+  "Evaporation": 49.633649282241315,
+  "Sunshine": 11.863562729275495,
+  "Rainfall": 49.22351129246459,
+  "WindSpeed9am": 57.194672892817316,
+  "WindSpeed3pm": 20.48519982978586,
+  "Pressure9am": 990.7541631616953,
+  "Pressure3pm": 1020.7338345322466,
+  "n_concepts": 7
 }

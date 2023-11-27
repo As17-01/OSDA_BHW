@@ -11,7 +11,7 @@ def find_cat_columns(data: pd.DataFrame) -> List[str]:
 
 
 def find_num_columns(data: pd.DataFrame) -> List[str]:
-    num_columns = [col_name for col_name in data.columns if data[col_name].dtypes in [int, float]]
+    num_columns = [col_name for col_name in data.columns if data[col_name].dtypes in ["int", "float", "int32"]]
     return num_columns
 
 

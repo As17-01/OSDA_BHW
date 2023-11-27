@@ -147,9 +147,9 @@ class DatasetLoader:
 
         weather = weather[
             [
+                "Evaporation",
+                "Sunshine",
                 "Rainfall",
-                "WindDir9am",
-                "WindDir3pm",
                 "WindSpeed9am",
                 "WindSpeed3pm",
                 "Pressure9am",
