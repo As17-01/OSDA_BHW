@@ -11,15 +11,16 @@ import neural_fca_example.neural_lib as nl
 
 
 class FormalConcept:
-    def __init__(self, thr_dict: Dict[str, Any], n_concepts: int):
+    def __init__(self, thr_dict: Dict[str, Any], n_concepts: int, algo: str = "Sofia"):
         self.thr_dict = thr_dict
         self.n_concepts = n_concepts
         self.cn = None
+        self.algo = algo
 
     def fit(self, data: pd.DataFrame, target: pd.Series):
         k_train = FormalContext.from_pandas(data)
 
-        lattice = ConceptLattice.from_context(k_train, algo="Sofia", is_monotone=True)
+        lattice = ConceptLattice.from_context(k_train, algo=self.algo, is_monotone=True)
 
         for c in lattice:
             y_preds = np.zeros(k_train.n_objects)
