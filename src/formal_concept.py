@@ -19,7 +19,7 @@ class FormalConcept:
     def fit(self, data: pd.DataFrame, target: pd.Series):
         k_train = FormalContext.from_pandas(data)
 
-        lattice = ConceptLattice.from_context(k_train, is_monotone=True)
+        lattice = ConceptLattice.from_context(k_train, algo="Sofia", is_monotone=True)
 
         for c in lattice:
             y_preds = np.zeros(k_train.n_objects)

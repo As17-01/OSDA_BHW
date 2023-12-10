@@ -83,24 +83,6 @@ class DatasetLoader:
         water["target"] = water["target"].astype("int32")
 
         self._convert_to_categorical(water)
-
-        np.random.seed(100)
-
-        water = water.iloc[np.random.choice(len(water), 2000, replace=False)]
-        water = water[
-            [
-                "aluminium",
-                "ammonia",
-                "arsenic",
-                "barium",
-                "cadmium",
-                "chloramine",
-                "chromium",
-                "bacteria",
-                "viruses",
-                "target",
-            ]
-        ]
         return water
 
     def _load_heart(self) -> pd.DataFrame:
@@ -108,7 +90,6 @@ class DatasetLoader:
         heart.rename(columns={"HeartDisease": "target"}, inplace=True)
 
         self._convert_to_categorical(heart)
-        heart = heart[["Age", "Sex", "ChestPainType", "RestingBP", "Cholesterol", "FastingBS", "target"]]
         return heart
 
     def _load_fruits(self) -> pd.DataFrame:
@@ -145,18 +126,6 @@ class DatasetLoader:
             elif weather[col_name].dtypes == "category":
                 weather[col_name] = weather[col_name].astype("str").fillna("unk").astype("category")
 
-        weather = weather[
-            [
-                "Evaporation",
-                "Sunshine",
-                "Rainfall",
-                "WindSpeed9am",
-                "WindSpeed3pm",
-                "Pressure9am",
-                "Pressure3pm",
-                "target",
-            ]
-        ]
         return weather
 
     def _load_titanic(self) -> pd.DataFrame:

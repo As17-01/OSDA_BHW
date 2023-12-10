@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["Aleksej Seliverstov <aseliverstov@nes.ru>"]
 readme = "README.md"
+packages = [
+    { include = "src" },
+]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
@@ -38,6 +41,9 @@ flake8-docstrings = "^1.6.0"
 pep8-naming = "^0.12.1"
 mypy = "^1.2.0"
 codespell = "^2.0.0"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.27.1"
 
 [tool.black]
 line-length = 120
