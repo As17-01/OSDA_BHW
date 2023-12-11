@@ -26,9 +26,9 @@ Check the following notebooks for the results:
 
 ## Decisions
 
-To deal with numeric values I used binarization of features. 
+TODO: I will fill this section later. To deal with numeric values I used binarization of features. 
 
-# Results
+## Results
 
 Accuracy metric values are available either inside `*.ipynb` files, or as `*.csv` files in `/metrics/`.
 
