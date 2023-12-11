@@ -30,7 +30,7 @@ To deal with numeric values I used binarization of features.
 
 # Results
 
-Accuracy metric values are available either inside `*.ipynb` files, or as `*.csv` files in `/metrics`.
+Accuracy metric values are available either inside `*.ipynb` files, or as `*.csv` files in `/metrics/`.
 
 ## Conclusions
 
