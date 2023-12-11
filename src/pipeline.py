@@ -116,7 +116,7 @@ class Pipeline:
                     data=data, num_feature=col_name, thr=self.base_model.thr_dict[col_name], scaler=self.scalers[i]
                 )
             for i, col_name in enumerate(cat_columns):
-                data = one_hot_encode(data, col_name, encoder=self.encoders[i], return_bool=True)
+                data = one_hot_encode(data, col_name, encoder=self.encoders[i], return_bool=True, drop_first=False)
             predictions = self.base_model.predict_proba(data)
 
         else:

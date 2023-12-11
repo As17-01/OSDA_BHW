@@ -98,7 +98,7 @@ def _choose_formal_concept(trial: optuna.Trial, data: pd.DataFrame) -> Dict[str,
         max_border = data[col_name].max()
         model_config["thr_dict"][col_name] = trial.suggest_float(col_name, min_border, max_border)
     model_config["n_concepts"] = trial.suggest_int("n_concepts", 1, len(data.columns))
-
+    model_config["n_epochs"] = trial.suggest_int("n_epochs", 1, 10)
     return model_config
 
 

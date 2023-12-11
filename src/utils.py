@@ -22,18 +22,22 @@ def binarize_column(data: pd.DataFrame, num_feature: str, thr: float, scaler: An
 
     data[num_feature] = scaler.inverse_transform(data[[num_feature]])
 
-    data[num_feature] = data[num_feature] >= thr
-    data.rename(columns={num_feature: f"{num_feature}>={thr}"}, inplace=True)
+    data[f"{num_feature}>={thr}"] = data[num_feature] >= thr
+    data[f"{num_feature}<{thr}"] = data[num_feature] < thr
+
+    data.drop(columns=[num_feature], inplace=True)
 
     return data
 
 
-def one_hot_encode(data: pd.DataFrame, cat_feature: str, encoder: Any, return_bool: bool = False) -> pd.DataFrame:
+def one_hot_encode(
+    data: pd.DataFrame, cat_feature: str, encoder: Any, return_bool: bool = False, drop_first: bool = True
+) -> pd.DataFrame:
     data = data.copy()
 
     data[cat_feature] = encoder.inverse_transform(data[cat_feature])
 
-    dummies = pd.get_dummies(data[cat_feature], drop_first=True)
+    dummies = pd.get_dummies(data[cat_feature], drop_first=drop_first)
     dummies.columns = [f"{cat_feature}_{dummy_name}" for dummy_name in dummies.columns]
 
     if return_bool:
