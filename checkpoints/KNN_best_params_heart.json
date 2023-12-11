@@ -1,4 +1,4 @@
 {
-  "n_neighbors": 3,
-  "algorithm": "brute"
+  "n_neighbors": 15,
+  "algorithm": "auto"
 }

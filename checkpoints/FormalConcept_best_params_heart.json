@@ -1,15 +1,15 @@
 {
-  "Age": 74.74827936128423,
-  "RestingBP": 89.8934523300243,
-  "Cholesterol": 500.97664461851946,
-  "FastingBS": 0.6365836701224616,
-  "MaxHR": 100.410001472423,
-  "Oldpeak": -1.7485484474328095,
-  "n_concepts": 34,
-  "n_epochs": 10,
-  "feature_0": 1,
-  "feature_1": 5,
-  "feature_2": 5,
+  "Age": 28.95014244569597,
+  "RestingBP": 75.14298172503646,
+  "Cholesterol": 274.01989329477226,
+  "FastingBS": 0.47430960106484593,
+  "MaxHR": 162.20780072918402,
+  "Oldpeak": -0.9546160935615549,
+  "n_concepts": 1,
+  "n_epochs": 5519,
+  "feature_0": 10,
+  "feature_1": 4,
+  "feature_2": 8,
   "feature_3": 2,
-  "feature_4": 10
+  "feature_4": 1
 }

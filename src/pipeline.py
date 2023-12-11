@@ -84,7 +84,7 @@ class Pipeline:
         else:
             raise ValueError("Not valid model!")
 
-    def predict_proba_model(self, data: pd.DataFrame, cat_columns: List[str], num_columns: List[str]) -> pd.Series:
+    def predict_proba_model(self, data: pd.DataFrame, cat_columns: List[str], num_columns: List[str]) -> np.ndarray:
         if isinstance(self.base_model, BaseModelType.cat.value):
             predictions = self.base_model.predict_proba(data)
 
@@ -148,7 +148,7 @@ class Pipeline:
 
         self.fit_model(data, np.ravel(target), cat_columns, num_columns)
 
-    def predict_proba(self, data: pd.DataFrame) -> pd.Series:
+    def predict_proba(self, data: pd.DataFrame) -> np.ndarray:
         cat_columns = find_cat_columns(data)
         num_columns = find_num_columns(data)
 
@@ -161,7 +161,7 @@ class Pipeline:
         predictions = self.predict_proba_model(data, cat_columns, num_columns)
         return predictions
 
-    def predict(self, data: pd.DataFrame) -> pd.Series:
+    def predict(self, data: pd.DataFrame) -> np.ndarray:
         probs = self.predict_proba(data)[:, 1]
         predictions = np.where(probs > 0.5, 1, 0)
         return predictions
