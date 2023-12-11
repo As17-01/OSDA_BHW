@@ -8,7 +8,7 @@ Install the project using poetry:
 
 Some packages to run Neural FCA need to be installed separately because they cannot be downloaded via poetry. See them in `./neural_fca_example/NeuralFCA_Big_hw.ipynb`. Also I could not install them inside a virtual environment. The workaround was to preinstall them outside venv, then create one, and then install all the remaining dependencies.
 
-Also you can create a VM, which should solve the problem.
+Alternatively, you can create a VM, which should solve the problem.
 
 ## Structure
 
