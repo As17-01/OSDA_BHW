@@ -1,10 +1,16 @@
 {
-  "Evaporation": 49.633649282241315,
-  "Sunshine": 11.863562729275495,
-  "Rainfall": 49.22351129246459,
-  "WindSpeed9am": 57.194672892817316,
-  "WindSpeed3pm": 20.48519982978586,
-  "Pressure9am": 990.7541631616953,
-  "Pressure3pm": 1020.7338345322466,
-  "n_concepts": 7
+  "Evaporation": 57.08940629535156,
+  "Sunshine": 8.903502039420502,
+  "Rainfall": 2.0831231121219034,
+  "WindSpeed9am": 64.2417064141196,
+  "WindSpeed3pm": 26.562261449088766,
+  "Pressure9am": 1037.2243011057435,
+  "Pressure3pm": 1006.2187994715102,
+  "n_concepts": 2,
+  "n_epochs": 9979,
+  "feature_0": 6,
+  "feature_1": 4,
+  "feature_2": 6,
+  "feature_3": 3,
+  "feature_4": 3
 }

@@ -1,4 +1,4 @@
 {
-  "n_neighbors": 10,
-  "algorithm": "brute"
+  "n_neighbors": 19,
+  "algorithm": "kd_tree"
 }

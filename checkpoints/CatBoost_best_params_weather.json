@@ -1,10 +1,10 @@
 {
   "silent": true,
-  "iterations": 175,
-  "depth": 4,
-  "learning_rate": 0.17549380241351548,
-  "l2_leaf_reg": 17.60484333557483,
-  "colsample_bylevel": 0.20081562084487162,
-  "bootstrap_type": "Bernoulli",
-  "subsample": 0.41604949579338546
+  "iterations": 450,
+  "depth": 7,
+  "learning_rate": 0.007787957206734688,
+  "l2_leaf_reg": 1.3592452582563745,
+  "colsample_bylevel": 0.13687462373888148,
+  "bootstrap_type": "Bayesian",
+  "bagging_temperature": 2.838931659787553
 }

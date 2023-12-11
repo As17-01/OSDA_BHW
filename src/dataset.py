@@ -125,7 +125,19 @@ class DatasetLoader:
                 weather[col_name] = weather[col_name].fillna(np.mean(weather[col_name])).astype("float64")
             elif weather[col_name].dtypes == "category":
                 weather[col_name] = weather[col_name].astype("str").fillna("unk").astype("category")
-
+        
+        weather = weather[
+            [
+                "Evaporation",
+                "Sunshine",
+                "Rainfall",
+                "WindSpeed9am",
+                "WindSpeed3pm",
+                "Pressure9am",
+                "Pressure3pm",
+                "target",
+            ]
+        ]
         return weather
 
     def _load_titanic(self) -> pd.DataFrame:
