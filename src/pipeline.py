@@ -63,12 +63,17 @@ class Pipeline:
             self.base_model.fit(data, target)
 
         elif isinstance(self.base_model, BaseModelType.formal_concept.value):
+            # I know that it is a horrible practice, but whatever
+            data = data[self.base_model.features].copy()
+
             for i, col_name in enumerate(num_columns):
-                data = binarize_column(
-                    data=data, num_feature=col_name, thr=self.base_model.thr_dict[col_name], scaler=self.scalers[i]
-                )
+                if col_name in self.base_model.features:
+                    data = binarize_column(
+                        data=data, num_feature=col_name, thr=self.base_model.thr_dict[col_name], scaler=self.scalers[i]
+                    )
             for i, col_name in enumerate(cat_columns):
-                data = one_hot_encode(data, col_name, encoder=self.encoders[i], return_bool=True)
+                if col_name in self.base_model.features:
+                    data = one_hot_encode(data, col_name, encoder=self.encoders[i], return_bool=True)
 
             data.reset_index(inplace=True)
             data["index"] = data["index"].astype("str")

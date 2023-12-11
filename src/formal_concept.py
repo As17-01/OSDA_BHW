@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Dict
+from typing import Sequence
 
 import numpy as np
 import pandas as pd
@@ -16,14 +17,16 @@ class FormalConcept:
         self,
         thr_dict: Dict[str, Any],
         n_concepts: int,
+        features: Sequence[str],
         loss_fn=torch.nn.CrossEntropyLoss(),
         nonlinearity=torch.nn.ReLU,
         n_epochs=10,
     ):
         self.thr_dict = thr_dict
         self.n_concepts = n_concepts
+        self.features = features
         self.cn = None
-        self.loss_fn = (loss_fn,)
+        self.loss_fn = loss_fn
         self.nonlinearity = nonlinearity
         self.n_epochs = n_epochs
 

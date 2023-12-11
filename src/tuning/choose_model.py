@@ -3,6 +3,7 @@ from typing import Dict
 
 import optuna
 import pandas as pd
+from loguru import logger
 from catboost import CatBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -97,8 +98,17 @@ def _choose_formal_concept(trial: optuna.Trial, data: pd.DataFrame) -> Dict[str,
         min_border = data[col_name].min()
         max_border = data[col_name].max()
         model_config["thr_dict"][col_name] = trial.suggest_float(col_name, min_border, max_border)
-    model_config["n_concepts"] = trial.suggest_int("n_concepts", 1, len(data.columns))
-    model_config["n_epochs"] = trial.suggest_int("n_epochs", 1, 10)
+    model_config["n_concepts"] = trial.suggest_int("n_concepts", 1, 40)
+    model_config["n_epochs"] = trial.suggest_int("n_epochs", 1, 2000)
+    
+    # Ad hoc feature selection because otherwise it runs for eternity
+    feature_names = []
+    for i in range(8):
+        feature_idx = trial.suggest_int(f"feature_{i}", 0, len(data.columns) - 1)
+        if data.columns[feature_idx] not in feature_names:
+            feature_names.append(data.columns[feature_idx])
+    model_config["features"] = feature_names
+    logger.info(feature_names)
     return model_config
 
 
