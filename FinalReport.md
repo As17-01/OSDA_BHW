@@ -10,7 +10,7 @@ I used the following datasets in the project:
 
 This dataset contains 918 samples of medical conditions, which were used to predict heart failure. This dataset had a good combination of both categorical and numerical features, an appropriate number of samples.
 
-Metrics:
+Accuracy score:
 ![Alt text](heart_metrics.jpg?raw=true "Heart metrics")
 
 ### Water quality prediction
@@ -19,7 +19,7 @@ Metrics:
 
 This dataset contains water compound elements. Theoretically, some combinations of elements in water could lead to the water being safe or not to drink by a human. The whole dataset contains only numerical features.
 
-Metrics:
+Accuracy score:
 ![Alt text](water_metrics.jpg?raw=true "Water metrics")
 
 ### Weather prediction
@@ -28,7 +28,7 @@ Metrics:
 
 The dataset I used is a small part of a big dataset, which could be found at the link. It contains different weather conditions, which could be used to predict the weather. 
 
-Metrics:
+Accuracy score:
 ![Alt text](weather_metrics.jpg?raw=true "Weather metrics")
 
 ## Preprocessing
