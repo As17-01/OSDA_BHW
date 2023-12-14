@@ -50,3 +50,18 @@ Some of the models require special processing of features:
 For cross-validation I used `K-Fold` validator with `k=5` and data shuffling for testing and `k=3` for fine-tuning.
 
 For hyperparameters optimization I used `optuna` with different number of trials for each dataset. The best parameters are saved in `checkpoints` directory. I optimized every major parameter of each model.
+
+## NFCA parameters optimization
+
+I optimized the following parameters of NFCA:
+
+* Binarization of numerical features - I used only binary splitting of features because there `32` numerical features across the `3` datasets, and I have been choosing the thresholds for the binarizations using optuna on cross-validation.
+* Used different features to use as attributes - because the algorithm runs in a reasonable time on approximately 15-16 features, I had to choose features from the original dataset to run NFCA. I also tried to select the features on a cross-validation.
+* Tuned the number of epochs - I tried selecting different number of epochs for the NFCA.
+* Tuned the number of best concepts - I tried adjusting the number of best concepts also on cross-validation.
+
+## Results
+
+NFCA does not show good results on all `3` datasets I used. It is much slower, comparing to the other algorithms. It requires a lot of manual work on features, which could be quite complicated, while other algorithms could also benefit from this, if not more, than NFCA. This makes an application of this algorithm quite complicated.
+
+In the meantime, configuration: binarization, the number of best concepts and etc do not hold up, if the model gets trained on a different train dataset.  
